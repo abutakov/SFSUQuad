@@ -112,7 +112,43 @@ def logout():
     session.pop('username', None)
     # Redirect to login page
     return redirect(url_for('login'))
-    
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    # Output message if something goes wrong...
+    msg = ''
+    # Check if "username", "password" and "email" POST requests exist (user submitted form)
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+        # Create variables for easy access
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        # Check if account exists using MySQL
+        cursor.execute('SELECT * FROM users WHERE username = %s', (username))
+        account = cursor.fetchone()
+        # If account exists show error and validation checks
+        if account:
+            msg = 'Account already exists!'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address!'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only characters and numbers!'
+        elif not username or not password or not email:
+            msg = 'Please fill out the form!'
+        else:
+            # Account doesnt exists and the form data is valid, now insert new account into accounts table
+            cursor.execute('INSERT INTO users VALUES (NULL, %s, %s, %s)', (username, password, email))
+            conn.commit()
+            msg = 'You have successfully registered!'
+    elif request.method == 'POST':
+        # Form is empty... (no POST data)
+        msg = 'Please fill out the form!'
+    # Show registration form with message (if any)
+    return render_template('register.html', msg=msg)
+
+
 @app.route('/vp', methods=['GET', 'POST'])
 def verticalproto():
     conn = mysql.connect()
@@ -186,5 +222,5 @@ def search():
     return render_template('index.html', cats=cats)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=80, debug=True)
-    #  app.run(host="localhost", port=5000, debug=True)
+    #  app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="localhost", port=5000, debug=True)

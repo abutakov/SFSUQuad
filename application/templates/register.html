@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -7,16 +7,17 @@
         <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-
         awesome/4.7.0/css/font-awesome.min.css">
-	<title>SFSU Quad LOGIN TEST</title>
+	<title>SFSU Quad REGISTER TEST</title>
     </head>
+
 	<body>
-		<div class="login">
-			<h1>Login</h1>
+		<div class="register">
+			<h1>Register</h1>
 			<div class="links">
-				<a href="{{ url_for('login') }}" class="active">Login</a>
-				<a href="{{ url_for('register') }}" class="active">Register</a>
+				<a href="{{ url_for('login') }}">Login</a>
+				<a href="{register.html }" class="active">Register</a>
 			</div>
-			<form action="{{ url_for('login') }}" method="post">
+			<form action="{{ url_for('register') }}" method="post" autocomplete="off">
 				<label for="username">
 					<i class="fas fa-user"></i>
 				</label>
@@ -25,8 +26,12 @@
 					<i class="fas fa-lock"></i>
 				</label>
 				<input type="password" name="password" placeholder="Password" id="password" required>
+				<label for="email">
+					<i class="fas fa-envelope"></i>
+				</label>
+				<input type="email" name="email" placeholder="Email" id="email" required>
 				<div class="msg">{{ msg }}</div>
-				<input type="submit" value="Login">
+				<input type="submit" value="Register">
 			</form>
 		</div>
 	</body>
