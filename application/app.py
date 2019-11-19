@@ -8,9 +8,11 @@
 # Emanuel Saunders(Nov 10,2019)#
 ################################
 
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, url_for
 from flaskext.mysql import MySQL
 from flask_thumbnails import Thumbnail
+from werkzeug.urls import url_parse
+import re
 
 app = Flask(__name__, static_url_path='/var/www/html/static', static_folder='static', template_folder='templates')
 
@@ -22,9 +24,13 @@ app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'] = '/var/www/html/static/user_images
 app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/var/www/html/static/user_images/cache/'
 app.config['THUMBNAIL_STORAGE_BACKEND'] = 'flask_thumbnails.storage_backends.FilesystemStorageBackend'
 app.config['THUMBNAIL_DEFAUL_FORMAT'] = 'JPEG'
+
+# Secret Key
+app.secret_key = 'your secret key'
+
 # Connect to the MySQL database
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'password'
+app.config['MYSQL_DATABASE_PASSWORD'] = '1234'
 app.config['MYSQL_DATABASE_DB'] = 'prototypedb'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
@@ -72,6 +78,40 @@ def adminDash():
 @app.route('/user_dash')
 def userDash():
     return render_template('user_dash.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    # Output message if something goes wrong...
+    msg = ''
+    # Check if "username" and "password" POST requests exist (user submitted form)
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        # Create variables for easy access
+        username = request.form['username']
+        password = request.form['password']
+        cursor.execute('SELECT * FROM users WHERE username = %s AND BINARY password = %s', (username, password))
+        users = cursor.fetchone()
+        if users:
+            # Create session data, we can access this data in other routes
+            session['loggedin'] = True
+            session['id'] = users[0]
+            session['username'] = users[1]
+            # Redirect to home page
+            return 'Logged in successfully!'
+        else:
+            # Account doesnt exist or username/password incorrect
+            msg = 'Incorrect username/password!'
+    return render_template('login.html', msg=msg)
+
+@app.route('/login/logout')
+def logout():
+    # Remove session data, this will log the user out
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    session.pop('username', None)
+    # Redirect to login page
+    return redirect(url_for('login'))
     
 @app.route('/vp', methods=['GET', 'POST'])
 def verticalproto():
@@ -146,4 +186,5 @@ def search():
     return render_template('index.html', cats=cats)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=80, debug=True)
+    #  app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="localhost", port=5000, debug=True)
