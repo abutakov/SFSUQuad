@@ -2,10 +2,25 @@
 {% extends 'application.html' %}
 {% block body %}
         <div class="container bg-light">
-            {% for item in data %}
-            <tr>
-                <td> {{item[0]}}: {{item[1]}} ({{item[2]}}) <img src="{{item[3]|thumbnail('200x200')}}" class="img-thumbnail" alt=""></td></br>
-            </tr>
-            {% endfor %}
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in data %}
+                    <tr>
+                        <td scope="row">PLACEHOLDER FOR THUMBNAIL</td>
+                        <td><a href="#">{{item[0]}}</a></td>
+                        <td>{{item[1]}}</td>
+                        <td>{{item[2]}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 {% endblock %}

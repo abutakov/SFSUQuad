@@ -24,7 +24,7 @@ app.config['THUMBNAIL_STORAGE_BACKEND'] = 'flask_thumbnails.storage_backends.Fil
 app.config['THUMBNAIL_DEFAUL_FORMAT'] = 'JPEG'
 # Connect to the MySQL database
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'password'
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
 app.config['MYSQL_DATABASE_DB'] = 'prototypedb'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
