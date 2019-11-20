@@ -65,6 +65,14 @@ def kevinProfile():
 def timProfile():
     return render_template('about_team_members/about_Tim.html')
 
+@app.route('/admin_dash')
+def adminDash():
+    return render_template('admin_dash.html')
+
+@app.route('/user_dash')
+def userDash():
+    return render_template('user_dash.html')
+    
 @app.route('/vp', methods=['GET', 'POST'])
 def verticalproto():
     conn = mysql.connect()

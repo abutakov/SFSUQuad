@@ -19,7 +19,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <input type="text" class="form-control" placeholder="Search" name="item">
+                    <input type="text" class="form-control" placeholder="Search" name="item" value={{query}}>
                     <div class="input-group-append">
                         <button type="submit" class="btn btn-warning">Search</button>
                     </div>
@@ -36,7 +36,7 @@
                 <!-- Menu Items -->
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a href="#" class="nav-link" data-toggle="modal"
+                        <a href="#" class="nav-link btn btn-outline-primary" data-toggle="modal"
                             data-target="#loginModal">Log In</a>
                     </li>
                     <li>
