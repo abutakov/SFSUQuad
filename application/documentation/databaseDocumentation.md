@@ -94,6 +94,20 @@ Where each cat in cats is an entry, and the index is the specific field (i.e. `c
 
 **MySQL Server
 
+# Importing
+Databases are compressed to save space on the server and must be unzipped before use: 
+
+`gunzip databasedump.sql.gz`
+
+To import the database use: 
+
+`mysqldump -u root -p database_name > data-dump.sql`
+
+where `database_name` should be the same as the dumpfile, given the proper naming conventions.
+
+- issues importing are generally attributed to unsupported charset, the SQL file can be manually edited to correct this.
+
+
 To access the MySQL server, log into MySQL using:
 
 `mysql -u root -p`
@@ -103,8 +117,6 @@ Then type in the password and hit enter:
 `password`
 
 To learn how to use MySQL, refer to the MySQL Reference Manual.
-
-
 
 
 
