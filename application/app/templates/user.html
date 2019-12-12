@@ -1,0 +1,25 @@
+{% extends 'application.html' %}
+{% block body %}
+<h1>User: {{ user.email }}</h1>
+<hr>
+{% if num_posts > 0 %}
+{% for post in posts %}
+<img src="{{ post.image }}" class="img-thumbnail" alt="{{ post.image }}">
+
+{{ post.User.email }} listed a <a href="{{ url_for('view_post', post_id=post.id)}} "><b>{{ post.title }} </b> for sale  </a>
+
+{% if post.active %}
+Approved
+{% else %}
+Not Approved
+{% endif %}
+<br>
+{% endfor %}
+{% else %}
+<p>
+You have made no listings. <a href="{{url_for('create_post')}}"> Click here to Create a listing!</a> 
+</p>
+{% endif %}
+
+
+{% endblock %}

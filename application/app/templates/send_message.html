@@ -1,0 +1,20 @@
+{% extends "application.html" %}
+{% block body %}
+<hr>
+    <h1>Contact Seller</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        <!-- creates a token to protect the form from CSRF attack -->
+        {{ form.hidden_tag() }} 
+            <b>{{ post.title }}</b><br>
+            <img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}">
+            {{ form.body.label }}<br>
+            {{ form.body(cols=50, rows=4) }}
+            {% for error in form.body.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        
+            <br>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
