@@ -3,4 +3,4 @@ vcs.xml
 modules.xml
 csc648-fall2019-Team08.iml
 .vscode
-__pycache__
+__pycache__/
