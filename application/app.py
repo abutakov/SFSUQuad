@@ -72,6 +72,10 @@ def adminDash():
 @app.route('/user_dash')
 def userDash():
     return render_template('user_dash.html')
+
+@app.route('/privacy')
+def privacyPolicy():
+    return render_template('privacypolicy.html')
     
 @app.route('/vp', methods=['GET', 'POST'])
 def verticalproto():
