@@ -108,3 +108,36 @@ To learn how to use MySQL, refer to the MySQL Reference Manual.
 
 
 
+# NEW DATABASE MANAGEMENT THROUGH FLASK-MIGRATE:
+
+## To create the db migration repo (**Not a git repo**): 
+Enter the following in the terminal (inside the project)
+  `$ flask db init`
+
+This assumes that the environment variable Flaskapp was set up via 
+
+`$ FLASK_APP=buysell.py`
+
+and uses the `flask` command with flask-migrate's added db functionality.
+
+Flask-migrate supports version control: 
+
+With the migration repo in place, the first database migration us done via: 
+
+`flask db migrate`
+
+where the flag `-m <message content>` can be used to specify the changes in the migration.
+
+`flask db upgrade` applies the changes to the database
+
+`flask db downgrade` removes the last changes to the database.
+
+**Note that in MySQL the database has to be created via the mysql shell *BEFORE* upgrading.**
+
+Also note that Flask-SQLAlchemy uses snake_case by default, such that table names will be applied as follows: 
+
+User becomes **user**
+
+AddressAndPhone becomes **address_and_phone**
+
+However this can be changed by adding the attr. `__tablename__` to the corresponding class

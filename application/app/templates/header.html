@@ -1,0 +1,66 @@
+<header class="fixed-top">
+    <div style="background-color: black; color: white; padding: 5px;">
+        SFSU Software Engineering Project CSC 648-848, Fall 2019. For Demonstration Only
+    </div>
+    <!-- NAVBAR (logo, searchbar, sell-button and menu)-->
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg bg-dark navbar-dark" id="main-nav">
+
+            <!-- Logo -->
+            <a class="btn" href="/"><img src="{{url_for('static', filename='SFSU_Quad_logo_rounded_mini.png') }}" class="navbar-brand p-0" width="50" height="50"></a>
+
+            <!-- Search bar-->
+            <form action="{{ url_for('search') }}" class="col-md-7" method="post">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <select class="form-control custom-select" name="category">
+                            {% for cat in cats %}
+                            <option> {{cat[0]}} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Search" name="search" value={{query}}>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-warning">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <a href="{{ url_for('create_post') }}" class="btn btn-outline-warning">Sell</a>
+
+            <!-- Hamburger (instead of menu, for smaller screens) -->
+            <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <!-- Menu Items -->
+                <ul class="navbar-nav ml-auto">
+                <!-- edited modal link below to route to pages -ES(Dec1)-->
+                {% if current_user.is_anonymous %}
+                    <li class="nav-item">
+                        <a href="login" class="nav-link btn btn-outline-primary">Log In</a>
+                    </li>
+                
+                <!-- edited modal link below to route to pages -ES(Dec1)-->
+                    <li>
+                        <a href="register" class="nav-link">Sign Up</a>
+                    </li>
+                {% else %}
+                <li>
+                    <a href="{{ url_for('user', hash_id=current_user.hash_id) }}" class="nav-link">Profile</a>
+                </li>
+                    <li>
+                        <a href ="{{ url_for('logout') }}" class="nav-link">Logout</a>
+                    </li>
+                    
+                {% endif %}
+                    <li class="nav-item">
+
+                            <a href="ourTeam" class="nav-link">About</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+current_user

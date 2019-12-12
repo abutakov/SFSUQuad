@@ -1,0 +1,12 @@
+
+{% extends 'application.html' %}
+{% block body %}
+        <div class="container bg-light">
+            {% for post in posts %}
+                {% if post.active %}
+               <a href="{{ url_for('view_post', post_id=post.id)}} "> {{ post.title}}: {{post.body}} Posted on: {{ post.timestamp }} </a></br>
+                {% endif %}
+          
+            {% endfor %}
+        </div>
+{% endblock %}
