@@ -3,5 +3,4 @@ vcs.xml
 modules.xml
 csc648-fall2019-Team08.iml
 .vscode
-__pycache__/
-application/__pycache__/app.cpython-37.pyc
+__pycache__

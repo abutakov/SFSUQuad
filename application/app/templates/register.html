@@ -1,0 +1,24 @@
+{% extends "application.html" %}
+{% block body %}
+<div class="container col-sm-8">
+    <h1 style="text-align: center;">Sign Up!</h1>
+    <form action="" method="post">
+        <!-- creates a token to protect the form from CSRF attack -->
+        {{ register_form.hidden_tag() }} 
+        <div class="form-group">
+            {{ register_form.email.label }}
+            {{ register_form.email(class_="form-control", size=32, placeholder="Enter email") }}
+            <small id="emailHelp" class="form-text text-muted">Email must end in '@mail.sfsu.edu'</small>
+        </div>
+        <div class="form-group">
+            {{ register_form.password.label }}
+            {{ register_form.password(class_="form-control", size=32) }}
+        </div>
+        <div class="form-group">
+            {{ register_form.password2.label }}
+            {{ register_form.password2(class_="form-control", size=32) }}
+        </div>
+        {{ register_form.submit(class_="btn btn-primary") }}
+    </form>
+</div>
+{% endblock %}
