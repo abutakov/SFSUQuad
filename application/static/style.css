@@ -114,7 +114,7 @@ h2 {
   height: 500px;
 }
 .carousel-image-1 {
-  background: url('../img/front_page_banner.jpg');
+  background: url('../static/front_page_banner.jpg');
   width: 100%;
 }
 
