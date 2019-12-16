@@ -1,0 +1,31 @@
+
+{% extends 'application.html' %}
+{% block body %}
+<!-- ADMIN DASHBOARD SECTION -->
+<section id="dashboards">
+    <br><br>
+    <h3>Hello Admin, </h1>
+    <br>
+    <div class="form-group">
+            <label for="exampleFormControlTextarea3">Pending Posts</label>
+            <textarea class="form-control" id="exampleFormControlTextarea3" rows="4">
+                POST 1 TITLE                  Link                    [Approve] [Disapprove]
+                POST 2 TITLE                  Link                    [Approve] [Disapprove]
+                POST 3 TITLE                  Link                    [Approve] [Disapprove]
+                POST 4 TITLE                  Link                    [Approve] [Disapprove]
+                POST 5 TITLE                  Link                    [Approve] [Disapprove]
+            </textarea>
+    </div>
+
+    <br>
+    <div class="form-group">
+        <label for="exampleFormControlTextarea3">Messages</label>
+        <textarea class="form-control" id="exampleFormControlTextarea3" rows="4">
+            From: username1               Subject: Post 1 Title                  Message 
+            From: username3               Subject: Post 3 Title                  Message 
+            From: username4               Subject: Post 4 Title                  Message 
+            From: username7               Subject: Post 7 Title                  Message 
+        </textarea>
+    </div>
+</section>
+{% endblock %} 

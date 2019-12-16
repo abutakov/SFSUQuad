@@ -1,5 +1,4 @@
 #! /usr/bin/python
 import sys
 sys.path.insert(0, "/var/www/html/")
-from app import app as application
-
+from buysell import app as application

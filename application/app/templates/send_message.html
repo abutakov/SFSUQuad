@@ -1,0 +1,16 @@
+{% extends "application.html" %}
+{% block body %}
+<div class="container col-md-8">
+    <h1 style="text-align: center;">Contact Seller</h1>   
+    <h3><b>{{ post.title }}</b></h3>
+    <img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}"> 
+    <form method="post" enctype="multipart/form-data">
+        <!-- creates a token to protect the form from CSRF attack -->
+        {{ message_form.hidden_tag() }} 
+        <div class="form-group">
+            {{ message_form.body(class_="form-control", placeholder="Enter message to Seller", cols=50, rows=4) }}
+        </div>
+        {{ message_form.submit(class_="btn btn-primary") }}
+    </form>
+</div>
+{% endblock %}
