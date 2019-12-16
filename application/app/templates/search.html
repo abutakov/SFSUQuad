@@ -1,0 +1,28 @@
+
+{% extends 'application.html' %}
+{% block body %}
+        <div class="container bg-light">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                    <tr>
+                        <td scope="row"><img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}"></td>
+                        <td><a href="{{ url_for('send_message', id=post.id) }}">{{post.title}}</a></td>
+                        <td>{{post.body}}</td>
+                        <td>PLACEHOLDER FOR PRICE</td>
+                        <td>{{post.timestamp}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+{% endblock %}
