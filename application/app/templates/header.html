@@ -37,10 +37,19 @@
                     <li class="nav-item">
                         <a href="{{ url_for('create_post') }}" class="nav-link btn btn-outline-warning mr-lg-4 my-2">Sell</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link btn btn-outline-primary mr-lg-2 my-2" data-toggle="modal" data-target="#loginModal">Log
-                            In</a>
-                    </li>
+                    {% if current_user.is_anonymous %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link btn btn-outline-primary mr-lg-2 my-2" data-toggle="modal" data-target="#loginModal">Log
+                                In</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{{ url_for('user', hash_id=current_user.hash_id) }}" class="nav-link btn btn-outline-primary mr-lg-2 my-2">Profile</a>
+                        </li>
+                        <li>
+                            <a href ="{{ url_for('logout') }}" class="nav-link btn btn-outline-primary mr-lg-2 my-2">Logout</a>
+                        </li>
+                    {% endif %}}
                     <li class="nav-item">
                         <a href="/about" class="nav-link btn btn-outline-primary mr-lg-2 my-2">About</a>
                     </li>
