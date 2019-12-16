@@ -27,9 +27,8 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(128), index=True, unique=True)
 
     def set_username(self):
-        temp = self.email.lower()
-        index = temp.find("@")
-        self.username = temp[0:index]
+        lowercase_email = self.email.lower()
+        self.username = lowercase_email[0:lowercase_email.find("@")]
         
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
