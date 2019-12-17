@@ -9,23 +9,36 @@
 
 from flask import render_template, flash, redirect, url_for, request, send_from_directory    
 from app import app, db, photos
+from sqlalchemy import func
 from app.forms import LoginForm, RegistrationForm, NewPostForm, MessageForm
 from app.models import User, Post, Message, Category
 from flask_login import current_user, login_user, login_required, logout_user
+from flask_paginate import Pagination, get_page_args
 from werkzeug.urls import url_parse
 from werkzeug import secure_filename
 import hashlib
 import os
 
+queried_posts = Post.query.filter().all()
+######################
+# Utility Functions  #
+######################
+
+def get_paginated_posts(posts, offset=0, per_page=5):
+    return posts[offset: offset + per_page]
+
 def get_category():
     return Category.query.all()
+
+#################
+# End Utilities #
+#################
 
 # renders the homepage and links the login_modal to the form
 @app.route('/')
 def index():
     login_form = LoginForm()
-    search = '%""%'
-    posts = Post.query.filter(Post.title.like(search)).all()
+    posts = Post.query.filter().order_by(Post.timestamp.desc()).limit(5).all()
     return render_template('index.html', title="Home", login_form=login_form, category=get_category(), posts=posts)
 
 # renders about page
@@ -35,24 +48,42 @@ def about():
     return render_template('about.html', title="About", login_form=login_form, category=get_category())
 
 # search results page
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/search/', methods=['GET', 'POST'])
 def search():
     login_form = LoginForm()
     if request.method == "POST":
-        query = request.form["search"]
         selected_category = request.form["category"]
+        query = request.form["search"]
         # get category_id from dropdown
         category_in_db = Category.query.filter_by(name=str(selected_category)).first()
         search = '%{}%'.format(query)
-
         # if no search category changed/All category
-        if category_in_db.name == "All":
-            posts = Post.query.filter(Post.title.like(search)).all()
+        if category_in_db.name != "All":
+            posts = Post.query.filter(Post.title.like(search).filter(Post.category.like(category_in_db.id))).filter_by(active=True)
         # else query specific category
-        else:
-            posts = Post.query.filter(Post.title.like(search).filter(Post.category.like(category_in_db.id)))
-        return render_template('search.html', login_form=login_form ,query=query, posts=posts, category=get_category())
-    return render_template('index.html', login_form=login_form, category=get_category())
+        else: 
+            posts = Post.query.filter(Post.title.like(search)).filter_by(active=True).all()
+        page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+        per_page = 100
+        total_posts = len(posts)
+        if total_posts == 0:
+            posts = Post.query.filter(Post.category.like(category_in_db.id)).filter_by(active=True).all()
+        pagination_posts = get_paginated_posts(posts, offset=offset, per_page=per_page)
+        pagination = Pagination(page=page, per_page=per_page, total=total_posts, css_framework='bootstrap4', record_name="results")
+        return render_template('search.html', login_form=login_form , query=query, category=get_category(), \
+                posts=pagination_posts, page=page, per_page=per_page, pagination=pagination, total_posts= total_posts)
+    else: 
+        # pagination (generates multiple pages for search results)
+        posts = Post.query.filter().filter_by(active=True).all()
+        page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+        per_page=5
+        total_posts = len(queried_posts)
+        pagination_posts = get_paginated_posts(queried_posts, offset=offset, per_page=per_page)
+        pagination = Pagination(page=page, per_page=per_page, total=total_posts, css_framework='bootstrap4', record_name="results")
+        return render_template('search.html', login_form=login_form, category=get_category(), \
+                posts=pagination_posts, page=page, per_page=per_page, pagination=pagination, total_posts=total_posts)
+
+
 
 # Checks if user is logged in and returns to original page. 
 @app.route('/login', methods=['GET', 'POST'])
@@ -106,13 +137,15 @@ def create_post():
     if new_post_form.validate_on_submit():
         if current_user.is_authenticated:
             selected_category = Category.query.filter_by(name=str(new_post_form.category.data)).first()
+            new_post_price = "$%.2f" % new_post_form.price.data
+            print(new_post_price)
             if new_post_form.image.data is not None: 
                 filename = hashlib.md5(str(new_post_form.image.data.filename).encode('utf-8')).hexdigest()
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 new_post_form.image.data.save(file_path)
-                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, image=filename, price=new_post_form.price.data)
+                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, image=filename, price=new_post_price)
             else:
-                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, price=new_post_form.price.data)
+                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, price=new_post_price)
             db.session.add(post)
             db.session.commit()
             flash('Your post has been made! Please wait at least 24 hours for it to go live.')

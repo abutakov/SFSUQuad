@@ -1,7 +1,15 @@
-
 {% extends 'application.html' %}
 {% block body %}
         <div class="container bg-light">
+            <h1>Search Results</h1>
+            {{ pagination.info }}
+            <br>
+            {% if total_posts == 0 %}
+            <h2>No listings were found for "{{query}}"</h2>
+            <br>
+            <h3> Try rephrasing your search or viewing a listing below: </h3>
+            <br>
+            {% endif %}
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -15,12 +23,13 @@
                 <tbody>
                     {% for post in posts %}
                     <tr>
+                       <!-- add brackets for loop index in table: loop.index + pagination.skip  -->
                         <td scope="row"><img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}"></td>
 
                         <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{post.title}}</a></td>
 
                         <td>{{post.body}}</td>
-                        <td>${{post.price}}</td>
+                        <td>{{post.price}}</td>
                         <td>{{post.timestamp}}</td>
                     </tr>
                     {% endfor %}

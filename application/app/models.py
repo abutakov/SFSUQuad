@@ -39,7 +39,7 @@ class User(UserMixin, db.Model):
 
 # defines how to print out class items
     def __repr__(self):
-        return f'{self.username}'
+        return '{}'.format(self.username)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,11 +50,7 @@ class Post(db.Model):
     user_email = db.Column(db.String(128), db.ForeignKey('user.email'))
     category = db.Column(db.Integer, db.ForeignKey('category.id'))
     active = db.Column(db.Boolean, default=False)
-    price = db.Column(db.Float(asdecimal=True, precision=2)) 
-
-    def __repr__(self):
-        return f'[Post:{self.title}, timestamp:{self.timestamp}, \
-                  owner:{self.User.hash_id} active:{self.active}]'
+    price = db.Column(db.String(40)) 
     
 
 class Message(db.Model):
@@ -63,12 +59,9 @@ class Message(db.Model):
     sender = db.Column(db.Integer, db.ForeignKey('user.id'))
     body = db.Column(db.String(40))    
 
-    def __repr__(self):
-        return f'[From:{self.sender} To: {self.post.owner_id}, Msg: {self.content}]'
-
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), unique=True)
 
     def __repr__(self):
-        return f'{self.name}'
+        return '{}'.format(self.name)
