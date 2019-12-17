@@ -34,6 +34,12 @@ def about():
     login_form = LoginForm()
     return render_template('about.html', title="About", login_form=login_form, category=get_category())
 
+# renders privacy policy page
+@app.route('/tos')
+def privacypolicy():
+    login_form = LoginForm()
+    return render_template('privacypolicy.html', title="About", login_form=login_form, category=get_category())
+
 # search results page
 @app.route('/search', methods=['GET', 'POST'])
 def search():
