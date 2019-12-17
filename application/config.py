@@ -19,7 +19,7 @@ app.config['SECRET_KEY'] = 'teameight'
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'teameight'
     # TODO: fix database url here: (mysql://user:pass@server/db)
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://flaskapp:flaskpass@localhost/app'        
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:zonmin678@localhost/app'        
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOADED_PHOTOS_DEST = os.path.join(basedir, 'uploads')
     UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
