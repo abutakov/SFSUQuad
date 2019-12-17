@@ -55,4 +55,3 @@ class NewPostForm(FlaskForm):
 
 class SearchForm(FlaskForm):
     search = StringField('Search for something new', validators=[Length(max=40)])
-
