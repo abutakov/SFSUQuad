@@ -8,7 +8,7 @@
 ################################
 
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SubmitField, FloatField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -45,13 +45,10 @@ def get_categories():
 
 class NewPostForm(FlaskForm):
     title = StringField("Post Title", validators=[DataRequired()])
-    body = TextAreaField('Please describe your item', validators=[Length(min=1, max=140)])
+    body = TextAreaField('Post Details', validators=[Length(min=1, max=140)])
+    price = FloatField('Item Price', default=0.00)
     category = QuerySelectField('Select a Category',
     query_factory = get_categories,
-    allow_blank = False ) 
-    image = FileField(validators=[FileAllowed(photos, 'Please upload an image file (.jpg, .jpeg, .png)')])
+    allow_blank = False) 
+    image = FileField("Upload an Image", validators=[FileAllowed(photos, 'Please upload an image file (.jpg, .jpeg, .png)')])
     submit = SubmitField('Submit')
-
-
-class SearchForm(FlaskForm):
-    search = StringField('Search for something new', validators=[Length(max=40)])
