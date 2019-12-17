@@ -24,10 +24,12 @@ class User(UserMixin, db.Model):
     admin = db.Column(db.Boolean, default=False)
     posts = db.relationship('Post', backref='User', lazy='dynamic')
     messages = db.relationship('Message', backref='User', lazy='dynamic')
-    hash_id = db.Column(db.String(256), index=True, unique=True)
+    username = db.Column(db.String(128), index=True, unique=True)
 
-    def hash_user(self):
-        self.hash_id = md5(self.email.lower().encode('utf-8')).hexdigest()
+    def set_username(self):
+        lowercase_email = self.email.lower()
+        self.username = lowercase_email[0:lowercase_email.find("@")]
+
         
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

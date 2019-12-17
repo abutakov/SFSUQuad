@@ -63,7 +63,7 @@ def register():
     if register_form.validate_on_submit():
         user = User(email=register_form.email.data)
         user.set_password(register_form.password.data)
-        user.hash_user()
+        user.set_username()
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
@@ -136,3 +136,4 @@ def send_message(id):
             next_page = url_for('view_post', login_form=login_form, message_form=message_form, post_id=id)
         return redirect(next_page)
     return render_template('send_message.html', id=id, login_form=login_form, message_form=message_form, post=post)
+

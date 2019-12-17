@@ -37,6 +37,7 @@
                     <li class="nav-item">
                         <a href="{{ url_for('create_post') }}" class="nav-link btn btn-outline-warning mr-lg-4 my-2">Sell</a>
                     </li>
+
                     {% if current_user.is_anonymous %}
                         <li class="nav-item">
                             <a href="#" class="nav-link btn btn-outline-primary mr-lg-2 my-2" data-toggle="modal" data-target="#loginModal">Log
@@ -50,6 +51,7 @@
                             <a href ="{{ url_for('logout') }}" class="nav-link btn btn-outline-primary mr-lg-2 my-2">Logout</a>
                         </li>
                     {% endif %}}
+
                     <li class="nav-item">
                         <a href="/about" class="nav-link btn btn-outline-primary mr-lg-2 my-2">About</a>
                     </li>
