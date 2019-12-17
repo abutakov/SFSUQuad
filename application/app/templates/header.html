@@ -15,7 +15,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <!-- Search bar-->
-                <form action="/search" class="col-lg-7 offset-lg-2 my-2" method="post">
+                <form action="{{url_for('search')}}" class="col-lg-7 offset-lg-2 my-2" method="post">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <select class="form-control custom-select" name="category">

@@ -16,6 +16,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 from flask_thumbnails import Thumbnail
+from flask_paginate import Pagination, get_page_args
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -31,11 +32,5 @@ configure_uploads(app, photos)
 patch_request_class(app) # default is 16 MB, to set use ...(app, 32 * 1024 * 1024 )
 
 thumb = Thumbnail(app)
-
-# from app.errors import bp as errors_bp
-# app.register_blueprint(errors_bp)
-
-# from app.auth import bp as auth_bp
-# app.register_blueprint(auth_bp, url_prefix='/auth')
 
 from app import routes, models
