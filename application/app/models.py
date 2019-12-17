@@ -43,7 +43,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(40), index=True)
     body = db.Column(db.String(240))
-    image = db.Column(db.String(256))
+    image = db.Column(db.String(256), default="default.jpg")
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_email = db.Column(db.String(128), db.ForeignKey('user.email'))
     category = db.Column(db.Integer, db.ForeignKey('category.id'))
@@ -58,7 +58,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post = db.Column(db.Integer, db.ForeignKey('post.id'))
     sender = db.Column(db.Integer, db.ForeignKey('user.id'))
-    body = db.Column(db.String(40))    
+    body = db.Column(db.String(40), unique=True)    
 
     def __repr__(self):
         return f'[From:{self.sender} To: {self.post.owner_id}, Msg: {self.content}]'
@@ -66,7 +66,7 @@ class Message(db.Model):
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Integer)
-
+    name = db.Column(db.String(48))
+    
     def __repr__(self):
-        return f'[Id:{self.id}, Name: {self.name}]'
+        return f'{self.name}'

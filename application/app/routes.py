@@ -10,31 +10,42 @@
 from flask import render_template, flash, redirect, url_for, request, send_from_directory    
 from app import app, db, photos
 from app.forms import LoginForm, RegistrationForm, NewPostForm, MessageForm
-from app.models import User, Post, Message
+from app.models import User, Post, Message, Category
 from flask_login import current_user, login_user, login_required, logout_user
 from werkzeug.urls import url_parse
 from werkzeug import secure_filename
+import hashlib
 import os
 
+
+def get_category():
+    return Category.query.all()
+
+# renders the homepage and links the login_modal to the form
 @app.route('/')
 def index():
     login_form = LoginForm()
-    return render_template('index.html', title="Home", login_form=login_form)
-
+    return render_template('index.html', title="Home", login_form=login_form, category=get_category())
+    
 @app.route('/about')
 def about():
     login_form = LoginForm()
-    return render_template('about.html', title="About", login_form=login_form)
+    return render_template('about.html', title="About", login_form=login_form, category=get_category())
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     login_form = LoginForm()
     if request.method == "POST":
         query = request.form["search"]
+        selected_category = request.form["category"]
+        category_in_db = Category.query.filter_by(name=str(selected_category)).first()
         search = f'%{query}%'
-        posts = Post.query.filter(Post.title.like(search)).all()
-        return render_template('search.html', login_form=login_form ,query=query, posts=posts)
-    return render_template('index.html')
+        if category_in_db.name == "All":
+            posts = Post.query.filter(Post.title.like(search)).all()
+        else:
+            posts = Post.query.filter(Post.title.like(search).filter(Post.category.like(category_in_db.id)))
+        return render_template('search.html', login_form=login_form ,query=query, posts=posts, category=get_category())
+    return render_template('index.html', login_form=login_form, category=get_category())
 
 # Checks if user is logged in and returns to original page. 
 @app.route('/login', methods=['GET', 'POST'])
@@ -52,7 +63,7 @@ def login():
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('index')
             return redirect(next_page)
-    return render_template('login.html', title='Sign In', login_form=login_form)
+    return render_template('login.html', title='Sign In', login_form=login_form, category=get_category())
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -68,7 +79,7 @@ def register():
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
-    return render_template('register.html', title='Register', login_form=login_form, register_form=register_form)
+    return render_template('register.html', title='Register', login_form=login_form, register_form=register_form, category=get_category())
 
 @login_required
 @app.route('/logout')
@@ -83,18 +94,21 @@ def create_post():
     new_post_form = NewPostForm()
     if new_post_form.validate_on_submit():
         if current_user.is_authenticated:
-            filename = secure_filename(new_post_form.image.data.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            new_post_form.image.data.save(file_path)
-            print(f'filename: {filename}\nfile_path: {file_path}')
-            post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, image=filename)
+            selected_category = Category.query.filter_by(name=str(new_post_form.category.data)).first()
+            if new_post_form.image.data is not None: 
+                filename = hashlib.md5(str(new_post_form.image.data.filename).encode('utf-8')).hexdigest()
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                new_post_form.image.data.save(file_path)
+                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, image=filename)
+            else:
+                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id)
             db.session.add(post)
             db.session.commit()
             flash('Your post has been made! Please wait at least 24 hours for it to go live.')
             return redirect(url_for('index'))
         else: 
             return redirect("login")
-    return render_template("create_post.html", title="Create Post", login_form=login_form, new_post_form=new_post_form)
+    return render_template("create_post.html", title="Create Post", login_form=login_form, new_post_form=new_post_form, category=get_category())
 
 
 @login_required
@@ -106,18 +120,16 @@ def user(hash_id):
     num_posts = 0
     for post in posts:
         num_posts += 1
-    return render_template('user.html', user=user, posts=posts, num_posts=num_posts, login_form=login_form)
+    return render_template('user.html', user=user, posts=posts, num_posts=num_posts, login_form=login_form, category=get_category())
 
 @app.route('/post/<post_id>/')
 def view_post(post_id):
-    login_form = LoginForm()
+    login_form=LoginForm()
     post = Post.query.filter_by(id=post_id).first_or_404()
-    return render_template('post.html', post=post, login_form=login_form)
+    return render_template('post.html', post=post, login_form=login_form, category=get_category())
 
 @app.route('/uploads/<filename>')
 def send_file(filename):
-    print("\n getting file...")
-    print(app.config['UPLOAD_FOLDER'])
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @login_required
@@ -135,4 +147,4 @@ def send_message(id):
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('view_post', login_form=login_form, message_form=message_form, post_id=id)
         return redirect(next_page)
-    return render_template('send_message.html', id=id, login_form=login_form, message_form=message_form, post=post)
+    return render_template('send_message.html', id=id, login_form=login_form, message_form=message_form, post=post, category=get_category())
