@@ -100,17 +100,19 @@ def create_post():
 @login_required
 @app.route('/user/<hash_id>')
 def user(hash_id):
+    login_form = LoginForm()
     user = User.query.filter_by(hash_id=hash_id).first_or_404()
     posts = Post.query.filter_by(user_email=user.email)
     num_posts = 0
     for post in posts:
         num_posts += 1
-    return render_template('user.html', user=user, posts=posts, num_posts=num_posts)
+    return render_template('user.html', user=user, posts=posts, num_posts=num_posts, login_form=login_form)
 
 @app.route('/post/<post_id>/')
 def view_post(post_id):
+    login_form = LoginForm()
     post = Post.query.filter_by(id=post_id).first_or_404()
-    return render_template('post.html', post=post)
+    return render_template('post.html', post=post, login_form=login_form)
 
 @app.route('/uploads/<filename>')
 def send_file(filename):
@@ -134,3 +136,4 @@ def send_message(id):
             next_page = url_for('view_post', login_form=login_form, message_form=message_form, post_id=id)
         return redirect(next_page)
     return render_template('send_message.html', id=id, login_form=login_form, message_form=message_form, post=post)
+

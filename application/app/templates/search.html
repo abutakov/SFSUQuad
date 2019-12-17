@@ -16,7 +16,9 @@
                     {% for post in posts %}
                     <tr>
                         <td scope="row"><img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}"></td>
-                        <td><a href="{{ url_for('send_message', id=post.id) }}">{{post.title}}</a></td>
+
+                        <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{post.title}}</a></td>
+
                         <td>{{post.body}}</td>
                         <td>PLACEHOLDER FOR PRICE</td>
                         <td>{{post.timestamp}}</td>
