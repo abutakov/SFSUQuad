@@ -9,19 +9,17 @@
                         <th scope="col">Title</th>
                         <th scope="col">Description</th>
                         <th scope="col">Price</th>
-                        <th scope="col">Date</th>
+                        <th scope="col">Category</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for post in posts %}
                     <tr>
                         <td scope="row"><img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}"></td>
-
                         <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{post.title}}</a></td>
-
                         <td>{{post.body}}</td>
                         <td>${{post.price}}</td>
-                        <td>{{post.timestamp}}</td>
+                        <td>{{post.category}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
