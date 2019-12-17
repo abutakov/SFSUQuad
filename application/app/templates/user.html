@@ -3,18 +3,34 @@
 <h1>User: {{ user.email }}</h1>
 <hr>
 {% if num_posts > 0 %}
-{% for post in posts %}
-<img src="{{ post.image }}" class="img-thumbnail" alt="{{ post.image }}">
+<div class="container bg-light">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Image</th>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+                <th scope="col">Price</th>
+                <th scope="col">Date</th>
+                <th scope="col">Approved</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td scope="row"><img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}"></td>
 
-{{ post.User.email }} listed a <a href="{{ url_for('view_post', post_id=post.id)}} "><b>{{ post.title }} </b> for sale  </a>
+                <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{post.title}}</a></td>
 
-{% if post.active %}
-Approved
-{% else %}
-Not Approved
-{% endif %}
-<br>
-{% endfor %}
+                <td>{{post.body}}</td>
+                <td>{{post.price}}</td>
+                <td>{{post.timestamp}}</td>
+                <td>{{post.active}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% else %}
 <p>
 You have made no listings. <a href="{{url_for('create_post')}}"> Click here to Create a listing!</a> 

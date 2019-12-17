@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
     admin = db.Column(db.Boolean, default=False)
     posts = db.relationship('Post', backref='User', lazy='dynamic')
     messages = db.relationship('Message', backref='User', lazy='dynamic')
-    username = db.Column(db.String(128), index=True, unique=True)
+    username = db.Column(db.String(128), index=True, unique=True, default='temp')
 
     def set_username(self):
         lowercase_email = self.email.lower()
@@ -39,17 +39,18 @@ class User(UserMixin, db.Model):
 
 # defines how to print out class items
     def __repr__(self):
-        return f'[User:{self.username}]'
+        return f'{self.username}'
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(40), index=True)
     body = db.Column(db.String(240))
-    image = db.Column(db.String(256))
+    image = db.Column(db.String(256), default='default.jpg')
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_email = db.Column(db.String(128), db.ForeignKey('user.email'))
     category = db.Column(db.Integer, db.ForeignKey('category.id'))
     active = db.Column(db.Boolean, default=False)
+    price = db.Column(db.Float(asdecimal=True, precision=2)) 
 
     def __repr__(self):
         return f'[Post:{self.title}, timestamp:{self.timestamp}, \
@@ -65,10 +66,9 @@ class Message(db.Model):
     def __repr__(self):
         return f'[From:{self.sender} To: {self.post.owner_id}, Msg: {self.content}]'
 
-
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Integer)
+    name = db.Column(db.String(40), unique=True)
 
     def __repr__(self):
-        return f'[Id:{self.id}, Name: {self.name}]'
+        return f'{self.name}'
