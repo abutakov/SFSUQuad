@@ -46,7 +46,7 @@ def get_categories():
 class NewPostForm(FlaskForm):
     title = StringField("Post Title", validators=[DataRequired()])
     body = TextAreaField('Post Details', validators=[Length(min=1, max=140)])
-    price = FloatField('Item Price')
+    price = FloatField('Item Price', default=0.00)
     category = QuerySelectField('Select a Category',
     query_factory = get_categories,
     allow_blank = False) 
