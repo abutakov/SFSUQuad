@@ -17,7 +17,6 @@ from werkzeug import secure_filename
 import hashlib
 import os
 
-
 def get_category():
     return Category.query.all()
 
