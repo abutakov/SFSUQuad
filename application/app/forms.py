@@ -34,7 +34,7 @@ class RegistrationForm(FlaskForm):
     def validate_email(self, email):
         user=User.query.filter_by(email=email.data).first()
         if user is not None:
-            raise ValidationError(f"An account already exists with given email: {email.data}")
+            raise ValidationError("An account already exists with given email: {}".format(email.data))
 
 class MessageForm(FlaskForm):
     body = TextAreaField( validators=[Length(min=0, max=140)])

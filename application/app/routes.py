@@ -43,7 +43,7 @@ def search():
         selected_category = request.form["category"]
         # get category_id from dropdown
         category_in_db = Category.query.filter_by(name=str(selected_category)).first()
-        search = f'%{query}%'
+        search = '%{}%'.format(query)
 
         # if no search category changed/All category
         if category_in_db.name == "All":
@@ -110,9 +110,9 @@ def create_post():
                 filename = hashlib.md5(str(new_post_form.image.data.filename).encode('utf-8')).hexdigest()
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 new_post_form.image.data.save(file_path)
-                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, image=filename)
+                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, image=filename, price=new_post_form.price.data)
             else:
-                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id)
+                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, price=new_post_form.price.data)
             db.session.add(post)
             db.session.commit()
             flash('Your post has been made! Please wait at least 24 hours for it to go live.')
