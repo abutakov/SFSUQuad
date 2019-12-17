@@ -25,22 +25,28 @@ def get_category():
 def index():
     login_form = LoginForm()
     return render_template('index.html', title="Home", login_form=login_form, category=get_category())
-    
+
+# renders about page
 @app.route('/about')
 def about():
     login_form = LoginForm()
     return render_template('about.html', title="About", login_form=login_form, category=get_category())
 
+# search results page
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     login_form = LoginForm()
     if request.method == "POST":
         query = request.form["search"]
         selected_category = request.form["category"]
+        # get category_id from dropdown
         category_in_db = Category.query.filter_by(name=str(selected_category)).first()
         search = f'%{query}%'
+
+        # if no search category changed/All category
         if category_in_db.name == "All":
             posts = Post.query.filter(Post.title.like(search)).all()
+        # else query specific category
         else:
             posts = Post.query.filter(Post.title.like(search).filter(Post.category.like(category_in_db.id)))
         return render_template('search.html', login_form=login_form ,query=query, posts=posts, category=get_category())
@@ -64,6 +70,7 @@ def login():
             return redirect(next_page)
     return render_template('login.html', title='Sign In', login_form=login_form, category=get_category())
 
+# link to registration form
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     login_form = LoginForm()
@@ -73,19 +80,22 @@ def register():
     if register_form.validate_on_submit():
         user = User(email=register_form.email.data)
         user.set_password(register_form.password.data)
-        user.hash_user()
+        user.set_username()
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
+        login_user(user)
+        return redirect(url_for('index'))
     return render_template('register.html', title='Register', login_form=login_form, register_form=register_form, category=get_category())
 
+# logs out and takes to home page
 @login_required
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
+# links to form to create a post
 @login_required
 @app.route('/create_post', methods=['GET', 'POST'])
 def create_post():
@@ -109,28 +119,45 @@ def create_post():
             return redirect("login")
     return render_template("create_post.html", title="Create Post", login_form=login_form, new_post_form=new_post_form, category=get_category())
 
-
 @login_required
-@app.route('/user/<hash_id>')
-def user(hash_id):
+@app.route('/post/<int:post_id>/edit_post/', methods=['GET', 'POST'])
+def edit_post(post_id):
+    login_form=LoginForm()
+    edit = Post.query.filter_by(id=post_id).first()
+    edit_post_form = NewPostForm(obj=edit)
+    edit_post_form.populate_obj(edit)
+    if edit_post_form.validate_on_submit():
+        edit.title = edit_post_form.title.data
+        edit.body = edit_post_form.body.data
+        db.session.commit() 
+    return render_template("edit_post.html", title="Edit Post", login_form=login_form, edit_post_form=edit_post_form, category=get_category())
+
+
+# routing for unique user pages. 
+@login_required
+@app.route('/user/<username>')
+def user(username):
     login_form = LoginForm()
-    user = User.query.filter_by(hash_id=hash_id).first_or_404()
+    user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(user_email=user.email)
     num_posts = 0
     for post in posts:
         num_posts += 1
     return render_template('user.html', user=user, posts=posts, num_posts=num_posts, login_form=login_form, category=get_category())
 
+# routing for unique post pages.
 @app.route('/post/<post_id>/')
 def view_post(post_id):
     login_form=LoginForm()
     post = Post.query.filter_by(id=post_id).first_or_404()
     return render_template('post.html', post=post, login_form=login_form, category=get_category())
 
+# method to return images from directory 
 @app.route('/uploads/<filename>')
 def send_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+# message form for posts
 @login_required
 @app.route('/post/<id>/send_message/', methods=['GET', 'POST'])
 def send_message(id):
