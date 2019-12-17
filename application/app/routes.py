@@ -24,9 +24,9 @@ def get_category():
 @app.route('/')
 def index():
     login_form = LoginForm()
-    search = f'%{""}%'
+    search = '%""%'
     posts = Post.query.filter(Post.title.like(search)).all()
-    return render_template('index.html', title="Home", login_form=login_form, category=get_category(), posts=posts
+    return render_template('index.html', title="Home", login_form=login_form, category=get_category(), posts=posts)
 
 # renders about page
 @app.route('/about')
