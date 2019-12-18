@@ -48,20 +48,20 @@ class Post(db.Model):
     image = db.Column(db.String(256), default='default.jpg')
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_email = db.Column(db.String(128), db.ForeignKey('user.email'))
-    category = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category = db.Column(db.String(40), db.ForeignKey('category.name'))
     active = db.Column(db.Boolean, default=False)
     price = db.Column(db.String(40)) 
-    
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post = db.Column(db.Integer, db.ForeignKey('post.id'))
-    sender = db.Column(db.Integer, db.ForeignKey('user.id'))
-    body = db.Column(db.String(40))    
-
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    sender_name = db.Column(db.String(128))
+    body = db.Column(db.String(128))
+    
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), unique=True)
-
+    
     def __repr__(self):
         return '{}'.format(self.name)

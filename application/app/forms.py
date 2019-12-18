@@ -8,7 +8,7 @@
 ################################
 
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SubmitField, FloatField
+from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SubmitField, FloatField, RadioField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -28,6 +28,7 @@ class RegistrationForm(FlaskForm):
 
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
+    
     submit = SubmitField('Create Account')
 
     # checks if email already in database
@@ -52,3 +53,11 @@ class NewPostForm(FlaskForm):
     allow_blank = False) 
     image = FileField("Upload an Image", validators=[FileAllowed(photos, 'Please upload an image file (.jpg, .jpeg, .png)')])
     submit = SubmitField('Submit')
+    
+class DeletePostForm(FlaskForm):
+    radio = RadioField("Would you like to delete the post?", choices=[('yes', 'Yes'), ('no', 'No')])
+    submit = SubmitField('Confirm')
+
+class ApprovePostForm(FlaskForm):
+    radio = RadioField("Would you like to approve the post?", choices=[('yes', 'Yes'), ('no', 'No')])
+    submit = SubmitField('Confirm')

@@ -9,9 +9,9 @@
         </button>
     </p>
     <div class="collapse" id="msgCollapse">
-        {% for message in messages %}
+        {% for message in user.messages %}
         <div class="card card-body">
-            From: {{message.sender}},
+            From: {{message.author.username}},
             {{message.body}}
         </div>
         {% endfor %}
@@ -32,14 +32,14 @@
             <tbody>
                 {% for post in posts %}
                 <tr>
-                    <td scope="row"><img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}"></td>
+                    <td scope="row"><img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}" style="width:200px;height:200px;"></td>
     
-                    <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{post.title}}</a></td>
+                    <td>
     
                     <td>{{post.body}}</td>
                     <td>{{post.price}}</td>
                     <td>{{post.timestamp}}</td>
-                    <td>{{post.active}}</td>
+                    <a href="{{ url_for('approve_post', post_id=post.id) }}">{{post.title}}</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -51,4 +51,59 @@
     </p>
     {% endif %}
 </div>
+{% if user.admin == True %}
+<h1> Admin Dashboard</h1>
+<h2> Posts <h2>
+<div class="container bg-light">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Approved</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in post_list %}
+                <tr>    
+                    <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{post.title}}</a></td>
+    
+                    <td>{{post.body}}</td>
+                    <td>{{post.price}}</td>
+                    <td>{{post.timestamp}}</td>
+                    <td>{{post.active}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+<h2>Users</h2>
+<div class="container bg-light">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for acc in user_list %}
+                <tr>
+                    <td>{{acc.username}}</td>
+                    <td>{{acc.email}}</td>
+                    <td>{{acc.admin}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endif %}
 {% endblock %}

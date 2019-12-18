@@ -10,7 +10,8 @@
 from flask import render_template, flash, redirect, url_for, request, send_from_directory    
 from app import app, db, photos
 from sqlalchemy import func
-from app.forms import LoginForm, RegistrationForm, NewPostForm, MessageForm
+from app.forms import LoginForm, RegistrationForm, NewPostForm, MessageForm, \
+     DeletePostForm, ApprovePostForm
 from app.models import User, Post, Message, Category
 from flask_login import current_user, login_user, login_required, logout_user
 from flask_paginate import Pagination, get_page_args
@@ -19,7 +20,6 @@ from werkzeug import secure_filename
 import hashlib
 import os
 
-queried_posts = Post.query.filter().all()
 ######################
 # Utility Functions  #
 ######################
@@ -38,7 +38,7 @@ def get_category():
 @app.route('/')
 def index():
     login_form = LoginForm()
-    posts = Post.query.filter().order_by(Post.timestamp.desc()).limit(5).all()
+    posts = Post.query.filter_by(active=True).order_by(Post.timestamp.desc()).limit(5).all()
     return render_template('index.html', title="Home", login_form=login_form, category=get_category(), posts=posts)
 
 # renders about page
@@ -79,12 +79,12 @@ def search():
         return render_template('search.html', login_form=login_form , query=query, category=get_category(), \
                 posts=pagination_posts, page=page, per_page=per_page, pagination=pagination, total_posts= total_posts)
     else: 
-        # pagination (generates multiple pages for search results)
+        # handles direct request to /search page without entering in search bar
         posts = Post.query.filter().filter_by(active=True).all()
         page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
         per_page=5
-        total_posts = len(queried_posts)
-        pagination_posts = get_paginated_posts(queried_posts, offset=offset, per_page=per_page)
+        total_posts = len(posts)
+        pagination_posts = get_paginated_posts(posts, offset=offset, per_page=per_page)
         pagination = Pagination(page=page, per_page=per_page, total=total_posts, css_framework='bootstrap4', record_name="results")
         return render_template('search.html', login_form=login_form, category=get_category(), \
                 posts=pagination_posts, page=page, per_page=per_page, pagination=pagination, total_posts=total_posts)
@@ -149,9 +149,9 @@ def create_post():
                 filename = hashlib.md5(str(new_post_form.image.data.filename).encode('utf-8')).hexdigest()
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 new_post_form.image.data.save(file_path)
-                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, image=filename, price=new_post_price)
+                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.name, image=filename, price=new_post_price)
             else:
-                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.id, price=new_post_price)
+                post = Post(title=new_post_form.title.data, body=new_post_form.body.data, user_email=current_user.email, category=selected_category.name, price=new_post_price)
             db.session.add(post)
             db.session.commit()
             flash('Your post has been made! Please wait at least 24 hours for it to go live.')
@@ -161,19 +161,41 @@ def create_post():
     return render_template("create_post.html", title="Create Post", login_form=login_form, new_post_form=new_post_form, category=get_category())
 
 @login_required
-@app.route('/post/<int:post_id>/edit_post/', methods=['GET', 'POST'])
-def edit_post(post_id):
-    login_form=LoginForm()
-    edit = Post.query.filter_by(id=post_id).first()
-    edit_post_form = NewPostForm(obj=edit)
-    edit_post_form.populate_obj(edit)
-    if edit_post_form.validate_on_submit():
-        edit.title = edit_post_form.title.data
-        edit.body = edit_post_form.body.data
-        db.session.commit() 
-    return render_template("edit_post.html", title="Edit Post", login_form=login_form, edit_post_form=edit_post_form, category=get_category())
+@app.route('/post/<int:post_id>/delete_post/', methods=['GET', 'POST'])
+def delete_post(post_id):
+    login_form = LoginForm()
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    if post.User.id == current_user.id:
+        delete_post_form = DeletePostForm()
+        if delete_post_form.validate_on_submit():
+            if delete_post_form.radio.data == "yes":
+                Post.query.filter_by(id=post_id).delete()
+                db.session.commit()
+                flash('Post deleted!')
+            return redirect(url_for('user', username=current_user.username))
+        return render_template("delete_post.html", delete_post_form=delete_post_form, category=get_category(), login_form=login_form )
+    return redirect(url_for('view_post', post_id=post_id))
 
-
+@login_required
+@app.route('/post/<int:post_id>/approve_post/', methods=['GET', 'POST'])
+def approve_post(post_id):
+    login_form = LoginForm()
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    if post.User.id == current_user.id:
+        approve_post_form = ApprovePostForm()
+        if approve_post_form.validate_on_submit():
+            if approve_post_form.radio.data == "yes":
+                post.active = True
+                db.session.commit()
+                flash('Post approved!')
+            else: 
+                post.active=False
+                db.session.commit()
+                flash('Post Hidden!')
+            return redirect(url_for('user', username=current_user.username))
+        return render_template("approve_post.html", approve_post_form=approve_post_form, category=get_category(), login_form=login_form )
+    return redirect(url_for('view_post', post_id=post_id))
+    
 # routing for unique user pages. 
 @login_required
 @app.route('/user/<username>')
@@ -185,6 +207,12 @@ def user(username):
     for post in posts:
         num_posts += 1
     return render_template('user.html', user=user, posts=posts, num_posts=num_posts, login_form=login_form, category=get_category())
+    if current_user.admin == True:
+        user_list = User.query.filter().all()
+        post_list = Post.query.filter().all()
+        return render_template('user.html', user=user, posts=posts, num_posts=num_posts, login_form=login_form, category=get_category(), user_list = user_list, post_list=post_list)
+
+
 
 # routing for unique post pages.
 @app.route('/post/<post_id>/')
@@ -206,12 +234,13 @@ def send_message(id):
     message_form = MessageForm()
     post = Post.query.filter_by(id=id).first_or_404()
     if message_form.validate_on_submit():
-        message = Message(post=id, sender=current_user.id, body=message_form.body.data )
+        message = Message(post=id, sender_name=current_user.username, recipient_id=post.user.id, body=message_form.body.data)
         db.session.add(message)
         db.session.commit()
         flash('Message has been sent to sender!')
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('view_post', login_form=login_form, message_form=message_form, post_id=id)
+            next_page = url_for('view_post', login_form=login_form, message_form=message_form, post_id=id, )
         return redirect(next_page)
     return render_template('send_message.html', id=id, login_form=login_form, message_form=message_form, post=post, category=get_category())
+

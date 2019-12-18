@@ -1,0 +1,22 @@
+{% extends "application.html" %}
+{% block body %}
+<div class="container col-sm-8">
+    <h1 style="text-align: center;">Delete Post</h1>   
+    <form method="post" enctype="multipart/form-data">
+        <!-- creates a token to protect the form from CSRF attack -->
+        {{ delete_post_form.hidden_tag() }}
+
+        <div class="form-group">
+          
+        
+                {{ delete_post_form.radio.label }}
+                {{ delete_post_form.radio }}
+            
+          
+    </div>
+
+        {{ delete_post_form.submit(class_="btn btn-primary") }}
+    </form>
+</div>
+{% endblock %}
+ 
