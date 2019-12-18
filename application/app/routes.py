@@ -215,3 +215,40 @@ def send_message(id):
             next_page = url_for('view_post', login_form=login_form, message_form=message_form, post_id=id)
         return redirect(next_page)
     return render_template('send_message.html', id=id, login_form=login_form, message_form=message_form, post=post, category=get_category())
+
+
+# renders alex page
+@app.route('/alex')
+def alex():
+    login_form = LoginForm()
+    return render_template('about_team_members/about_Alex.html', title="About", login_form=login_form, category=get_category())
+
+# renders alexLee page
+@app.route('/alex_lee')
+def alexLee():
+    login_form = LoginForm()
+    return render_template('about_team_members/about_AlexLee.html', title="About", login_form=login_form, category=get_category())
+
+# renders andrew page
+@app.route('/andrew')
+def andrew():
+    login_form = LoginForm()
+    return render_template('about_team_members/about_Andrew.html', title="About", login_form=login_form, category=get_category())
+
+# renders emanuel page
+@app.route('/emanuel')
+def emanuel():
+    login_form = LoginForm()
+    return render_template('about_team_members/about_Emanuel.html', title="About", login_form=login_form, category=get_category())
+
+# renders kevin page
+@app.route('/kevin')
+def kevin():
+    login_form = LoginForm()
+    return render_template('about_team_members/about_Kevin.html', title="About", login_form=login_form, category=get_category())
+
+# renders tim page
+@app.route('/tim')
+def tim():
+    login_form = LoginForm()
+    return render_template('about_team_members/about_Tim.html', title="About", login_form=login_form, category=get_category())
