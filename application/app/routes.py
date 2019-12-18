@@ -206,12 +206,12 @@ def user(username):
     num_posts = 0
     for post in posts:
         num_posts += 1
+        if current_user.admin == True:
+            user_list = User.query.filter().all()
+            post_list = Post.query.filter().all()
+            return render_template('user.html', user=user, posts=posts, num_posts=num_posts, login_form=login_form, category=get_category(), user_list = user_list, post_list=post_list)
     return render_template('user.html', user=user, posts=posts, num_posts=num_posts, login_form=login_form, category=get_category())
-    if current_user.admin == True:
-        user_list = User.query.filter().all()
-        post_list = Post.query.filter().all()
-        return render_template('user.html', user=user, posts=posts, num_posts=num_posts, login_form=login_form, category=get_category(), user_list = user_list, post_list=post_list)
-
+   
 
 
 # routing for unique post pages.

@@ -34,12 +34,11 @@
                 <tr>
                     <td scope="row"><img src="{{ url_for('send_file', filename=post.image) }}" class="img-thumbnail" alt="{{ post.image }}" style="width:200px;height:200px;"></td>
     
-                    <td>
-    
+                    <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{post.title}}</a></td>
+
                     <td>{{post.body}}</td>
                     <td>{{post.price}}</td>
                     <td>{{post.timestamp}}</td>
-                    <a href="{{ url_for('approve_post', post_id=post.id) }}">{{post.title}}</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -67,13 +66,14 @@
             </thead>
             <tbody>
                 {% for post in post_list %}
-                <tr>    
-                    <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{post.title}}</a></td>
-    
+                <tr>  
+                      
+                    <td>{{post.title}}</td>
                     <td>{{post.body}}</td>
                     <td>{{post.price}}</td>
                     <td>{{post.timestamp}}</td>
-                    <td>{{post.active}}</td>
+                    <td><a href="{{ url_for('approve_post', post_id=post.id) }}">{{post.active}}</a></td>
+
                 </tr>
                 {% endfor %}
             </tbody>
@@ -85,10 +85,8 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    
                     <th scope="col">Username</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Active</th>
                     <th scope="col">Admin</th>
                 </tr>
             </thead>
